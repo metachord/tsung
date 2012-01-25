@@ -3,7 +3,7 @@
 %% TODO: extensibleMatch features not implemented.
 %%
 %% Author  : Pablo Polvorin <ppolv@yahoo.com.ar>
--module(rfc4515_parser).
+-module(ts_rfc4515_parser).
 -author('ppolv@yahoo.com.ar').
 
 

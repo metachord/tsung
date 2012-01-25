@@ -1836,7 +1836,7 @@ user_dn({_Pid,DynVars}) ->
 \end{Verbatim}
 
 We aren't covering errors here. supposing that there is always one (and only one) user found, that we extract from the \varname{search\_result} variable (as defined in the previous search operation).
-Each entry in the result set is a SearchResultEntry record. The record definition can be found in \file{<TSUNG_DIR>/include/ELDAPv3.hrl}.
+Each entry in the result set is a SearchResultEntry record. The record definition can be found in \file{<TSUNG_DIR>/include/ts_ELDAPv3.hrl}.
 
 As we only need to access the distinguished name of the object, we index into the result tuple directly. But if you need to access other attributes you probably will want to include the appropriate .hrl and use the record syntax instead. One of the eight user:password pairs in our users file was wrong, so we expect 1/8 of the authentication attempts to fail.
 

@@ -39,23 +39,23 @@
 
 -define(MAX_HEADER, 8).  %% mm...
 
--include("ELDAPv3.hrl").
+-include("ts_ELDAPv3.hrl").
 
 encode_filter({'and',L}) -> {'and',lists:map(fun encode_filter/1,L)};
 encode_filter({'or',L}) ->  {'or',lists:map(fun encode_filter/1,L)};
 encode_filter({'not',I}) -> {'not',encode_filter(I)};
 encode_filter(I = {'present',_}) -> I;
-encode_filter({'substring',Attr,Subs}) -> eldap:substrings(Attr,Subs);
-encode_filter({eq,Attr,Value}) -> eldap:equalityMatch(Attr,Value);
-encode_filter({'let',Attr,Value}) -> eldap:lessOrEqual(Attr,Value);
-encode_filter({get,Attr,Value}) -> eldap:greaterOrEqual(Attr,Value);
-encode_filter({aproxq,Attr,Value}) -> eldap:approxMatch(Attr,Value).
+encode_filter({'substring',Attr,Subs}) -> ts_eldap:substrings(Attr,Subs);
+encode_filter({eq,Attr,Value}) -> ts_eldap:equalityMatch(Attr,Value);
+encode_filter({'let',Attr,Value}) -> ts_eldap:lessOrEqual(Attr,Value);
+encode_filter({get,Attr,Value}) -> ts_eldap:greaterOrEqual(Attr,Value);
+encode_filter({aproxq,Attr,Value}) -> ts_eldap:approxMatch(Attr,Value).
 
 bind_msg(Id,User,Password) ->
     Req = {bindRequest,#'BindRequest'{version=?LDAP_VERSION, name=User, authentication = {simple, Password}}},
     Message = #'LDAPMessage'{messageID  = Id,
                              protocolOp = Req},
-    {ok,Bytes} = asn1rt:encode('ELDAPv3', 'LDAPMessage', Message),
+    {ok,Bytes} = asn1rt:encode('ts_ELDAPv3', 'LDAPMessage', Message),
     Bytes.
 
 
@@ -70,7 +70,7 @@ search_msg(Id,Base,Scope,Filter,Attributes) ->
                attributes = Attributes},
     Message = #'LDAPMessage'{messageID  = Id,
                  protocolOp = {searchRequest,Req}},
-    {ok,Bytes} = asn1rt:encode('ELDAPv3', 'LDAPMessage', Message),
+    {ok,Bytes} = asn1rt:encode('ts_ELDAPv3', 'LDAPMessage', Message),
     Bytes.
 
 
@@ -78,14 +78,14 @@ search_msg(Id,Base,Scope,Filter,Attributes) ->
 start_tls_msg(Id) ->
     Req = #'ExtendedRequest'{requestName = ?START_TLS_OID},
     Message = #'LDAPMessage'{messageID  = Id,  protocolOp = {extendedReq,Req}},
-    {ok,Bytes} = asn1rt:encode('ELDAPv3', 'LDAPMessage', Message),
+    {ok,Bytes} = asn1rt:encode('ts_ELDAPv3', 'LDAPMessage', Message),
     Bytes.
 
 
 unbind_msg(Id) ->
     Message = #'LDAPMessage'{messageID  = Id,
                  protocolOp = {unbindRequest,[]}},
-    {ok,Bytes} = asn1rt:encode('ELDAPv3', 'LDAPMessage', Message),
+    {ok,Bytes} = asn1rt:encode('ts_ELDAPv3', 'LDAPMessage', Message),
     Bytes.
 
 
@@ -94,7 +94,7 @@ add_msg(Id,DN,Attrs) ->
             attributes = [ {'AddRequest_attributes',Type, Values}  || {Type,Values} <- Attrs]},
     Message = #'LDAPMessage'{messageID  = Id,
                  protocolOp = {addRequest,Req}},
-    {ok,Bytes} = asn1rt:encode('ELDAPv3', 'LDAPMessage', Message),
+    {ok,Bytes} = asn1rt:encode('ts_ELDAPv3', 'LDAPMessage', Message),
     Bytes.
 
 
@@ -105,7 +105,7 @@ modify_msg(Id,DN,Modifications) ->
                                    || {Operation,Type,Values} <- Modifications],
     Req = #'ModifyRequest'{object = DN,    modification = Mods},
     Message = #'LDAPMessage'{messageID  = Id,  protocolOp = {modifyRequest,Req}},
-    {ok,Bytes} = asn1rt:encode('ELDAPv3', 'LDAPMessage', Message),
+    {ok,Bytes} = asn1rt:encode('ts_ELDAPv3', 'LDAPMessage', Message),
     Bytes.
 
 

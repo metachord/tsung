@@ -1,4 +1,4 @@
-%%% File    : pgsql_proto.erl
+%%% File    : ts_pgsql_proto.erl
 %%% Author  : Christian Sunesson <chrisu@kth.se>
 %%% Description : PostgreSQL protocol driver
 %%% Created :  9 May 2005
@@ -6,7 +6,7 @@
 %%% This is the protocol handling part of the PostgreSQL driver, it turns packages into
 %%% erlang term messages and back.
 
--module(pgsql_proto).
+-module(ts_pgsql_proto).
 
 %% TODO:
 %% When factorizing make clear distinction between message and packet.
@@ -46,20 +46,20 @@
 -export([encode_message/2]).
 -export([encode/2]).
 
--import(pgsql_util, [option/2]).
--import(pgsql_util, [socket/1]).
--import(pgsql_util, [send/2, send_int/2, send_msg/3]).
--import(pgsql_util, [recv_msg/2, recv_msg/1, recv_byte/2, recv_byte/1]).
--import(pgsql_util, [string/1, make_pair/2, split_pair/1]).
--import(pgsql_util, [count_string/1, to_string/1]).
--import(pgsql_util, [coldescs/2, datacoldescs/3]).
+-import(ts_pgsql_util, [option/2]).
+-import(ts_pgsql_util, [socket/1]).
+-import(ts_pgsql_util, [send/2, send_int/2, send_msg/3]).
+-import(ts_pgsql_util, [recv_msg/2, recv_msg/1, recv_byte/2, recv_byte/1]).
+-import(ts_pgsql_util, [string/1, make_pair/2, split_pair/1]).
+-import(ts_pgsql_util, [count_string/1, to_string/1]).
+-import(ts_pgsql_util, [coldescs/2, datacoldescs/3]).
 
 deliver(Message) ->
     DriverPid = get(driver),
     DriverPid ! Message.
 
 run(Options) ->
-    Db = spawn_link(pgsql_proto, init,
+    Db = spawn_link(ts_pgsql_proto, init,
 		    [self(), Options]),
     {ok, Db}.
 
@@ -376,7 +376,7 @@ process_equery(Log) ->
 	{pgsql, {bind_complete, _}} ->
 	    process_equery(Log);
 	{pgsql, {row_description, Descs}} ->
-	    {ok, Descs1} = pgsql_util:decode_descs(Descs),
+	    {ok, Descs1} = ts_pgsql_util:decode_descs(Descs),
 	    process_equery_datarow(Descs1, Log, {undefined, Descs, undefined});
 	{pgsql, Any} ->
 	    process_equery([Any|Log])
@@ -390,7 +390,7 @@ process_equery_datarow(Types, Log, Info={Command, Desc, Status}) ->
 	{pgsql, {ready_for_query, Status1}} ->
 	    {ok, Command, Desc, Status1, lists:reverse(Log)};
 	{pgsql, {data_row, Row}} ->
-	    {ok, DecodedRow} = pgsql_util:decode_row(Types, Row),
+	    {ok, DecodedRow} = ts_pgsql_util:decode_row(Types, Row),
 	    process_equery_datarow(Types, [DecodedRow|Log], Info);
 	{pgsql, Any} ->
 	    process_equery_datarow(Types, [Any|Log], Info)
@@ -432,7 +432,7 @@ process_execute(Sock, Ref, Pid) ->
 	{pgsql, {no_data, _}} ->
 	    {ok, Command, Result} = process_execute_nodata();
 	{pgsql, {row_description, Descs}} ->
-	    {ok, Types} = pgsql_util:decode_descs(Descs),
+	    {ok, Types} = ts_pgsql_util:decode_descs(Descs),
 	    {ok, Command, Result} = 
 		process_execute_resultset(Sock, Ref, Pid, Types, []);
 		    
@@ -466,7 +466,7 @@ process_execute_resultset(Sock, Ref, Pid, Types, Log) ->
 	{pgsql, {command_complete, Command}} ->
 	    {ok, list_to_atom(Command), lists:reverse(Log)};
 	{pgsql, {data_row, Row}} ->
-	    {ok, DecodedRow} = pgsql_util:decode_row(Types, Row),
+	    {ok, DecodedRow} = ts_pgsql_util:decode_row(Types, Row),
 	    process_execute_resultset(Sock, Ref, Pid, Types, [DecodedRow|Log]);
 	{pgsql, {portal_suspended, _}} ->
 	    throw(portal_suspended);
@@ -481,7 +481,7 @@ decode_packet(Code, Packet) ->
     Ret = fun(CodeName, Values) -> {ok, {CodeName, Values}} end,
     case Code of 
 	?PG_ERROR_MESSAGE ->
-	    Message = pgsql_util:errordesc(Packet),
+	    Message = ts_pgsql_util:errordesc(Packet),
 	    Ret(error_message, Message);
 	?PG_EMPTY_RESPONSE ->
 	    Ret(empty_response, []);
@@ -531,11 +531,11 @@ decode_packet(Code, Packet) ->
                          0 -> text;
                          1 -> binary
                      end,
-            Cols=pgsql_util:int16(ColFormat,[]),
+            Cols=ts_pgsql_util:int16(ColFormat,[]),
             Ret(copy_response, {Format,Cols});
 	$t ->
 	    <<NParams:16/integer, OidsP/binary>> = Packet,
-	    Oids = pgsql_util:oids(OidsP, []),
+	    Oids = ts_pgsql_util:oids(OidsP, []),
 	    Ret(parameter_description, Oids);
 	?PG_NO_DATA ->
 	    Ret(no_data, []);
@@ -556,10 +556,10 @@ encode(Code, Packet) ->
 
 %% Encode a message of a given type.
 encode_message(pass_plain, Password) ->
-		Pass = pgsql_util:pass_plain(Password),
+		Pass = ts_pgsql_util:pass_plain(Password),
 		encode($p, Pass);
 encode_message(pass_md5, {User, Password, Salt}) ->
-		Pass = pgsql_util:pass_md5(User, Password, Salt),
+		Pass = ts_pgsql_util:pass_md5(User, Password, Salt),
 		encode($p, Pass);
 encode_message(terminate, _) ->
     encode($X, <<>>);

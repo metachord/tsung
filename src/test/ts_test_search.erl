@@ -304,8 +304,8 @@ dynvars_jsonpath_test() ->
 %         " <img src='img3'> "
 %         " <img src='img4'></body></html>",
 %    XPath = "//img/@src",
-%    Tree = mochiweb_html:parse(list_to_binary(Data)),
-%    R = mochiweb_xpath:execute(XPath,Tree),
+%    Tree = ts_mochiweb_html:parse(list_to_binary(Data)),
+%    R = ts_mochiweb_xpath:execute(XPath,Tree),
 %    erlang:display(R),
 %    Expected = [<<"img0">>,<<"img1">>,<<"img2">>,<<"img3">>,<<"img4">>],
 %    ?assertMatch(Expected, R).
@@ -320,8 +320,8 @@ parse_dynvar_xpath_single_test() ->
         " <img src='img3'> "
         " <a href='/index.html'></body></html>",
    XPath = "//a/@href",
-   Tree = mochiweb_html:parse(list_to_binary(Data)),
-   R = mochiweb_xpath:execute(XPath,Tree),
+   Tree = ts_mochiweb_html:parse(list_to_binary(Data)),
+   R = ts_mochiweb_xpath:execute(XPath,Tree),
    erlang:display(R),
    Expected = [<<"/index.html">>],
    ?assertEqual(Expected, R).

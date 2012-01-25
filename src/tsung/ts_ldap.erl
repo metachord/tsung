@@ -40,7 +40,7 @@
 
 -include("ts_profile.hrl").
 -include("ts_ldap.hrl").
--include("ELDAPv3.hrl").
+-include("ts_ELDAPv3.hrl").
 
 %%----------------------------------------------------------------
 %%-----Configuration parsing
@@ -115,7 +115,7 @@ parse_packets(State,Asn1St) ->
         {none,NewAsn1St} ->
             {State#state_rcv{ack_done=false,session=NewAsn1St},[],false};
         {packet,Packet,NewAsn1St} ->
-            {ok,Resp} = asn1rt:decode('ELDAPv3', 'LDAPMessage', Packet),
+            {ok,Resp} = asn1rt:decode('ts_ELDAPv3', 'LDAPMessage', Packet),
             parse_packet(Resp,State#state_rcv{session = NewAsn1St})
     end.
 

@@ -479,7 +479,7 @@ set_dynvars(file,{iter,FileId,Delimiter},_Vars,_DynData) ->
     ts_utils:split(Line,Delimiter);
 set_dynvars(jsonpath,{JSONPath, From},_Vars,DynData) ->
     {ok, Val} = ts_dynvars:lookup(From,DynData#dyndata.dynvars),
-    JSON=mochijson2:decode(Val),
+    JSON=ts_mochijson2:decode(Val),
     ts_utils:jsonpath(JSONPath, JSON).
 
 %% @spec ctrl_struct(CtrlData::term(),State::#state_rcv{},Count::integer) ->

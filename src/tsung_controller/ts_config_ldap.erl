@@ -82,7 +82,7 @@ parse_config(Element = #xmlElement{name=ldap},
                                  end,
 
                       Attributes=[],
-                      {ParsedFilter,[]} = rfc4515_parser:filter(rfc4515_parser:tokenize(Filter)),
+                      {ParsedFilter,[]} = ts_rfc4515_parser:filter(ts_rfc4515_parser:tokenize(Filter)),
                       #ts_request{ack     = parse,
                                   endpage = true,
                                   dynvar_specs  = DynVar,

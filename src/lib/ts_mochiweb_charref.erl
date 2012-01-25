@@ -2,7 +2,7 @@
 %% @copyright 2007 Mochi Media, Inc.
 
 %% @doc Converts HTML 4 charrefs and entities to codepoints.
--module(mochiweb_charref).
+-module(ts_mochiweb_charref).
 -export([charref/1, test/0]).
 
 %% External API.
@@ -28,7 +28,7 @@ charref(L) ->
     entity(L).
     
 %% @spec test() -> ok
-%% @doc Run tests for mochiweb_charref.
+%% @doc Run tests for ts_mochiweb_charref.
 test() ->
     1234 = charref("#1234"),
     255 = charref("#xfF"),

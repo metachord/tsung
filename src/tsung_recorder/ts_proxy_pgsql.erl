@@ -80,7 +80,7 @@ parse(State=#proxy{parse_status=Status},_,ServerSocket,Data) when Status==new ->
     ?LOGF("Received data from client: size=~p [~p]~n",[PacketSize, StartupPacket],?DEB),
     <<ProtoMaj:16/integer, ProtoMin:16/integer, Data2/binary>> = StartupPacket,
     ?LOGF("Received data from client: proto maj=~p min=~p~n",[ProtoMaj, ProtoMin],?DEB),
-    Res= pgsql_util:split_pair_rec(Data2),
+    Res= ts_pgsql_util:split_pair_rec(Data2),
     case get_db_user(Res) of
         #pgsql_request{database=undefined} ->
             ?LOGF("Received data from client: split = ~p~n",[Res],?DEB),
@@ -209,7 +209,7 @@ decode_packet($S, _Data) -> %sync
 decode_packet($H, _Data) -> %flush
     flush;
 decode_packet($E, Data) -> %execute
-    {NamePortal,PortalSize} = pgsql_util:to_string(Data),
+    {NamePortal,PortalSize} = ts_pgsql_util:to_string(Data),
     S1=PortalSize+1,
     << _:S1/binary, MaxParams:32/integer >> = Data,
     ?LOGF("Extended protocol: execute ~p ~p~n",[NamePortal,MaxParams], ?DEB),

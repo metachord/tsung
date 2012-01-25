@@ -2,7 +2,7 @@
 %% @copyright 2007 Mochi Media, Inc.
 
 %% @doc Loosely tokenizes and generates parse trees for HTML 4.
--module(mochiweb_html).
+-module(ts_mochiweb_html).
 -export([tokens/1, parse/1, parse_tokens/1, to_tokens/1, escape/1,
          escape_attr/1, to_html/1, test/0]).
 
@@ -122,10 +122,10 @@ escape_attr(S) when is_list(S) ->
 escape_attr(I) when is_integer(I) ->
     escape_attr(integer_to_list(I), []);
 escape_attr(F) when is_float(F) ->
-    escape_attr(mochinum:digits(F), []).
+    escape_attr(ts_mochinum:digits(F), []).
 
 %% @spec test() -> ok
-%% @doc Run tests for mochiweb_html.
+%% @doc Run tests for ts_mochiweb_html.
 test() ->
     test_destack(),
     test_tokens(),
@@ -701,7 +701,7 @@ tokenize_charref(Bin, S=#decoder{offset=O}, Start) ->
         <<_:O/binary, $;, _/binary>> ->
             Len = O - Start,
             <<_:Start/binary, Raw:Len/binary, _/binary>> = Bin,
-            Data = case mochiweb_charref:charref(Raw) of
+            Data = case ts_mochiweb_charref:charref(Raw) of
                        undefined ->
                            Start1 = Start - 1,
                            Len1 = Len + 2,

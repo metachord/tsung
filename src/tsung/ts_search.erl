@@ -285,7 +285,7 @@ parse_dynvar(D=[{xpath,_VarName, _Expr}| _DynVarsSpecs],
                   _ ->
                       Body
               end,
-    try mochiweb_html:parse(ToParse) of
+    try ts_mochiweb_html:parse(ToParse) of
         Tree ->
             parse_dynvar(D,Binary,String,Tree,DynVars)
     catch
@@ -298,7 +298,7 @@ parse_dynvar(D=[{xpath,_VarName, _Expr}| _DynVarsSpecs],
 parse_dynvar(D=[{jsonpath,_VarName, _Expr}| _DynVarsSpecs],
                 Binary,String,undefined,DynVars) ->
     Body = extract_body(Binary),
-    try mochijson2:decode(Body) of
+    try ts_mochijson2:decode(Body) of
         JSON ->
             ?LOGF("JSON decode: ~p~n", [JSON],?DEB),
             parse_dynvar(D,Binary,String,JSON,DynVars)
@@ -329,7 +329,7 @@ parse_dynvar([{pgsql_expr,VarName,_Expr}|DynVarsSpecs],Binary,String,pgsql_error
     parse_dynvar(DynVarsSpecs, Binary,String,json_error,DynVars);
 
 parse_dynvar([{xpath,VarName, Expr}| DynVarsSpecs],Binary,String,Tree,DynVars)->
-    Value = mochiweb_xpath:execute(Expr,Tree),
+    Value = ts_mochiweb_xpath:execute(Expr,Tree),
     ?DebugF("Xpath result: ~p~n", [Value]),
     case Value of
         [] -> ?LOGF("Dyn Var: no Match (varname=~p), ~n",[VarName],?WARN);

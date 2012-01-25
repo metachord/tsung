@@ -1,10 +1,10 @@
-%% mochiweb_html_xpath.erl
+%% ts_mochiweb_html_xpath.erl
 %% @author Pablo Polvorin
 %% created on <2008-04-29>
 %%
 %% XPath interpreter, navigate mochiweb's html structs
 %% Only a subset of xpath is implemented, see what is supported in test.erl
--module(mochiweb_xpath).
+-module(ts_mochiweb_xpath).
 
 -export([execute/2,execute/3,compile_xpath/1]).
 
@@ -18,7 +18,7 @@
 
 %% @spec( string() ) -> compiled_xpath()
 compile_xpath(Expr) ->
-    mochiweb_xpath_parser:compile_xpath(Expr).
+    ts_mochiweb_xpath_parser:compile_xpath(Expr).
     
 %% @doc Execute the given XPath expression against the given document, using
 %% the default set of functions. 
@@ -27,7 +27,7 @@ compile_xpath(Expr) ->
 %% @type Doc = node()
 %% @type Results = [node()] | binary() | boolean() | number()
 execute(XPathString,Doc) when is_list(XPathString) ->
-    XPath = mochiweb_xpath_parser:compile_xpath(XPathString),
+    XPath = ts_mochiweb_xpath_parser:compile_xpath(XPathString),
     execute(XPath,Doc);
 
 execute(XPath,Root) ->
@@ -36,7 +36,7 @@ execute(XPath,Root) ->
 %% @doc Execute the given XPath expression against the given document, 
 %%      using the default set of functions plus the user-supplied ones. 
 %%
-%% @see mochiweb_xpath_functions.erl to see how to write functions
+%% @see ts_mochiweb_xpath_functions.erl to see how to write functions
 %%
 %% @spec execute(XPath,Doc,Functions) -> Results
 %% @type XPath =  compiled_xpath() | string()
@@ -54,14 +54,14 @@ execute(XPath,Root) ->
 %%       resolved, and no function lookup would occur when
 %%       the expression is executed
 execute(XPathString,Doc,Functions) when is_list(XPathString) ->
-    XPath = mochiweb_xpath_parser:compile_xpath(XPathString),
+    XPath = ts_mochiweb_xpath_parser:compile_xpath(XPathString),
     execute(XPath,Doc,Functions);
 
 execute(XPath,Doc,Functions) ->    
     R = {root,none,[Doc]},
     Funs =  lists:foldl(fun(T={Key,_Fun,_Signature},Prev) ->
                             lists:keystore(Key,1,Prev,T)
-            end,mochiweb_xpath_functions:default_functions(),Functions),
+            end,ts_mochiweb_xpath_functions:default_functions(),Functions),
     execute_expr(XPath,#ctx{ctx=[R],root=R,functions=Funs}).
 
 
@@ -91,7 +91,7 @@ execute_expr({function_call,Fun,Args},Ctx=#ctx{functions=Funs}) ->
     case lists:keysearch(Fun,1,Funs) of
         {value,{Fun,F,FormalSignature}} -> 
             TypedArgs = lists:map(fun({Type,Arg}) ->
-                                    mochiweb_xpath_utils:convert(Arg,Type)
+                                    ts_mochiweb_xpath_utils:convert(Arg,Type)
                         end,lists:zip(FormalSignature,RealArgs)),
             F(Ctx,TypedArgs);
         false -> 
@@ -185,7 +185,7 @@ apply_predicate({pred,{number,N}},NodeList,_Ctx) when length(NodeList) >= N ->
 
 apply_predicate({pred,Pred},NodeList,Ctx) ->
     Filter = fun(Node) ->
-                mochiweb_xpath_utils:boolean_value(
+                ts_mochiweb_xpath_utils:boolean_value(
                         execute_expr(Pred,Ctx#ctx{ctx=[Node]}))
               end,
     L = lists:filter(Filter,NodeList),
@@ -208,11 +208,11 @@ comp(CompFun,L,R) ->
 
 comp_fun('=') -> 
     fun 
-        (A,B) when is_number(A) -> A == mochiweb_xpath_utils:number_value(B);
-        (A,B) when is_number(B) -> mochiweb_xpath_utils:number_value(A) == B;
-        (A,B) when is_boolean(A) -> A == mochiweb_xpath_utils:boolean_value(B);
-        (A,B) when is_boolean(B) -> mochiweb_xpath_utils:boolean_value(A) == B;
-        (A,B) -> mochiweb_xpath_utils:string_value(A) == mochiweb_xpath_utils:string_value(B)
+        (A,B) when is_number(A) -> A == ts_mochiweb_xpath_utils:number_value(B);
+        (A,B) when is_number(B) -> ts_mochiweb_xpath_utils:number_value(A) == B;
+        (A,B) when is_boolean(A) -> A == ts_mochiweb_xpath_utils:boolean_value(B);
+        (A,B) when is_boolean(B) -> ts_mochiweb_xpath_utils:boolean_value(A) == B;
+        (A,B) -> ts_mochiweb_xpath_utils:string_value(A) == ts_mochiweb_xpath_utils:string_value(B)
     end;
 
 comp_fun('!=') ->
@@ -222,19 +222,19 @@ comp_fun('!=') ->
 
 comp_fun('>') ->
   fun(A,B) -> 
-    mochiweb_xpath_utils:number_value(A) > mochiweb_xpath_utils:number_value(B) 
+    ts_mochiweb_xpath_utils:number_value(A) > ts_mochiweb_xpath_utils:number_value(B) 
   end;
 comp_fun('<') ->
   fun(A,B) -> 
-    mochiweb_xpath_utils:number_value(A) < mochiweb_xpath_utils:number_value(B)
+    ts_mochiweb_xpath_utils:number_value(A) < ts_mochiweb_xpath_utils:number_value(B)
    end;
 comp_fun('<=') ->
   fun(A,B) -> 
-    mochiweb_xpath_utils:number_value(A) =< mochiweb_xpath_utils:number_value(B) 
+    ts_mochiweb_xpath_utils:number_value(A) =< ts_mochiweb_xpath_utils:number_value(B) 
   end;
 comp_fun('>=') ->
   fun(A,B) -> 
-    mochiweb_xpath_utils:number_value(A) >= mochiweb_xpath_utils:number_value(B) 
+    ts_mochiweb_xpath_utils:number_value(A) >= ts_mochiweb_xpath_utils:number_value(B) 
   end.
 
 

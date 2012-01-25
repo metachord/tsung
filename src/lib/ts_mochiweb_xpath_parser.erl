@@ -3,7 +3,7 @@
 %% This module uses the xpath parser of xmerl.. that interface isn't documented
 %% so could change between OTP versions.. its know to work with OTP R12B2 
 %% created on 2008-05-07
--module(mochiweb_xpath_parser).
+-module(ts_mochiweb_xpath_parser).
 
 -export([compile_xpath/1]).
 

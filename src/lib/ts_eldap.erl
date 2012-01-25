@@ -1,4 +1,4 @@
--module(eldap).
+-module(ts_eldap).
 %%% --------------------------------------------------------------------
 %%% Created:  12 Oct 2000 by Tobbe <tnt@home.se>
 %%% Function: Erlang client LDAP implementation according RFC 2251,2253
@@ -16,7 +16,7 @@
 
 -import(lists,[concat/1]).
 
--include("ELDAPv3.hrl").
+-include("ts_ELDAPv3.hrl").
 -include("eldap.hrl").
 
 -define(LDAP_VERSION, 3).
@@ -198,8 +198,8 @@ optional(Value) -> Value.
 %%%
 %%%  Example:
 %%%
-%%%	Filter = eldap:substrings("sn", [{any,"o"}]),
-%%%	eldap:search(S, [{base, "dc=bluetail, dc=com"},
+%%%	Filter = ts_eldap:substrings("sn", [{any,"o"}]),
+%%%	ts_eldap:search(S, [{base, "dc=bluetail, dc=com"},
 %%%	                 {filter, Filter},
 %%%			 {attributes,["cn"]}])),
 %%%
@@ -651,7 +651,7 @@ request(S, Data, ID, Request) ->
 send_request(S, Data, ID, Request) ->
     Message = #'LDAPMessage'{messageID  = ID,
 			     protocolOp = Request},
-    {ok,Bytes} = asn1rt:encode('ELDAPv3', 'LDAPMessage', Message),
+    {ok,Bytes} = asn1rt:encode('ts_ELDAPv3', 'LDAPMessage', Message),
     case do_send(S, Data, Bytes) of
 	{error,Reason} -> throw({gen_tcp_error,Reason});
 	Else           -> Else
@@ -672,7 +672,7 @@ recv_response(S, Data) ->
     case do_recv(S, Data, 0, Timeout) of
 	{ok, Packet} ->
 	    check_tag(Packet),
-	    case asn1rt:decode('ELDAPv3', 'LDAPMessage', Packet) of
+	    case asn1rt:decode('ts_ELDAPv3', 'LDAPMessage', Packet) of
 		{ok,Resp} -> {ok,Resp};
 		Error     -> throw(Error)
 	    end;
@@ -808,14 +808,14 @@ bump_id(Data) -> Data#eldap.id + 1.
 %%%
 %%%  The simplest case:
 %%%  
-%%%  1> eldap:parse_dn("CN=Steve Kille,O=Isode Limited,C=GB").
+%%%  1> ts_eldap:parse_dn("CN=Steve Kille,O=Isode Limited,C=GB").
 %%%  {ok,[[{attribute_type_and_value,"CN","Steve Kille"}],
 %%%       [{attribute_type_and_value,"O","Isode Limited"}],
 %%%       [{attribute_type_and_value,"C","GB"}]]}
 %%%
 %%%  The first RDN is multi-valued:
 %%%  
-%%%  2> eldap:parse_dn("OU=Sales+CN=J. Smith,O=Widget Inc.,C=US").
+%%%  2> ts_eldap:parse_dn("OU=Sales+CN=J. Smith,O=Widget Inc.,C=US").
 %%%  {ok,[[{attribute_type_and_value,"OU","Sales"},
 %%%        {attribute_type_and_value,"CN","J. Smith"}],
 %%%       [{attribute_type_and_value,"O","Widget Inc."}],
@@ -823,27 +823,27 @@ bump_id(Data) -> Data#eldap.id + 1.
 %%%
 %%%  Quoting a comma:
 %%%
-%%%  3> eldap:parse_dn("CN=L. Eagle,O=Sue\\, Grabbit and Runn,C=GB").
+%%%  3> ts_eldap:parse_dn("CN=L. Eagle,O=Sue\\, Grabbit and Runn,C=GB").
 %%%  {ok,[[{attribute_type_and_value,"CN","L. Eagle"}],
 %%%       [{attribute_type_and_value,"O","Sue\\, Grabbit and Runn"}],
 %%%       [{attribute_type_and_value,"C","GB"}]]}
 %%%
 %%%  A value contains a carriage return:
 %%%
-%%%  4> eldap:parse_dn("CN=Before                                    
+%%%  4> ts_eldap:parse_dn("CN=Before                                    
 %%%  4> After,O=Test,C=GB").
 %%%  {ok,[[{attribute_type_and_value,"CN","Before\nAfter"}],
 %%%       [{attribute_type_and_value,"O","Test"}],
 %%%       [{attribute_type_and_value,"C","GB"}]]}
 %%%
-%%%  5> eldap:parse_dn("CN=Before\\0DAfter,O=Test,C=GB").
+%%%  5> ts_eldap:parse_dn("CN=Before\\0DAfter,O=Test,C=GB").
 %%%  {ok,[[{attribute_type_and_value,"CN","Before\\0DAfter"}],
 %%%       [{attribute_type_and_value,"O","Test"}],
 %%%       [{attribute_type_and_value,"C","GB"}]]}
 %%%  
 %%%  An RDN in OID form:
 %%%  
-%%%  6> eldap:parse_dn("1.3.6.1.4.1.1466.0=#04024869,O=Test,C=GB").
+%%%  6> ts_eldap:parse_dn("1.3.6.1.4.1.1466.0=#04024869,O=Test,C=GB").
 %%%  {ok,[[{attribute_type_and_value,"1.3.6.1.4.1.1466.0","#04024869"}],
 %%%       [{attribute_type_and_value,"O","Test"}],
 %%%       [{attribute_type_and_value,"C","GB"}]]}
@@ -995,7 +995,7 @@ error(Emsg,Rest) ->
 %%%
 %%% Test case:
 %%%
-%%%  2> eldap:parse_ldap_url("ldap://10.42.126.33:389/cn=Administrative%20CA,o=Post%20Danmark,c=DK?certificateRevokationList;binary").
+%%%  2> ts_eldap:parse_ldap_url("ldap://10.42.126.33:389/cn=Administrative%20CA,o=Post%20Danmark,c=DK?certificateRevokationList;binary").
 %%%  {ok,{{10,42,126,33},389},
 %%%      [[{attribute_type_and_value,"cn","Administrative%20CA"}],
 %%%       [{attribute_type_and_value,"o","Post%20Danmark"}],

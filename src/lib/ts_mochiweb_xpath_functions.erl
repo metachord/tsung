@@ -2,7 +2,7 @@
 %% @author Pablo Polvorin 
 %% @doc Some core xpath functions that can be used in xpath expressions
 %% created on 2008-05-07
--module(mochiweb_xpath_functions).
+-module(ts_mochiweb_xpath_functions).
 
 -export([default_functions/0]).
 
@@ -65,7 +65,7 @@ substring(_Ctx,[String,Start,Length]) when is_binary(String)->
 %%      node-set, of the result of converting the string-values of the node
 %%      to a number.
 sum(_Ctx,[Values]) ->
-    lists:sum(lists:map(fun  mochiweb_xpath_utils:number_value/1,Values)).
+    lists:sum(lists:map(fun  ts_mochiweb_xpath_utils:number_value/1,Values)).
 
 %% @doc Function: number string-length(string?) 
 %%      The string-length returns the number of characters in the string 

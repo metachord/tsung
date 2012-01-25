@@ -537,7 +537,7 @@ parse(#xmlElement{name=dyn_variable, attributes=Attrs},
                      {re,Name,CompiledRegExp};
                  xpath ->
                      ?LOGF("Add new xpath: ~s ~n", [Expr],?INFO),
-                     CompiledXPathExp = mochiweb_xpath:compile_xpath(FlattenExpr),
+                     CompiledXPathExp = ts_mochiweb_xpath:compile_xpath(FlattenExpr),
                      {xpath,Name,CompiledXPathExp};
                  _Other ->
                      ?LOGF("Add ~s ~s ~p ~n", [Type,Name,Expr],?INFO),

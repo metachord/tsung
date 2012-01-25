@@ -2267,7 +2267,7 @@ user_dn({_Pid,DynVars}) -&gt;
 </TABLE></TD></TR>
 </TABLE></TD></TR>
 </TABLE><P>We aren’t covering errors here. supposing that there is always one (and only one) user found, that we extract from the <TT>search_result</TT> variable (as defined in the previous search operation).
-Each entry in the result set is a SearchResultEntry record. The record definition can be found in <TT>&lt;TSUNG_DIR&gt;/include/ELDAPv3.hrl</TT>.</P><P>As we only need to access the distinguished name of the object, we index into the result tuple directly. But if you need to access other attributes you probably will want to include the appropriate .hrl and use the record syntax instead. One of the eight user:password pairs in our users file was wrong, so we expect 1/8 of the authentication attempts to fail.</P><P>Indeed, after running the scenario we can confirm this in the Tsung
+Each entry in the result set is a SearchResultEntry record. The record definition can be found in <TT>&lt;TSUNG_DIR&gt;/include/ts_ELDAPv3.hrl</TT>.</P><P>As we only need to access the distinguished name of the object, we index into the result tuple directly. But if you need to access other attributes you probably will want to include the appropriate .hrl and use the record syntax instead. One of the eight user:password pairs in our users file was wrong, so we expect 1/8 of the authentication attempts to fail.</P><P>Indeed, after running the scenario we can confirm this in the Tsung
 report (see figure <A HREF="#fig:ldap:results">2</A>). The bind operation maintains two
 counters: <TT>ldap_bind_ok</TT> and <TT>ldap_bind_error</TT>,
 that counts successful and unsuccessful bind attempts.</P><BLOCKQUOTE CLASS="figure"><DIV CLASS="center"><HR WIDTH="80%" SIZE=2></DIV>

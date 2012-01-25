@@ -1,10 +1,10 @@
-%%% File    : pgsql_util.erl
+%%% File    : ts_pgsql_util.erl
 %%% Author  : Christian Sunesson
 %%% Description : utility functions used in implementation of 
 %%%               postgresql driver.
 %%% Created : 11 May 2005 by Blah <cos@local>
 
--module(pgsql_util).
+-module(ts_pgsql_util).
 
 %% Key-Value handling
 -export([option/2]).
